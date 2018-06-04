@@ -1,6 +1,7 @@
 from rest_framework import serializers
+from rest_framework.relations import HyperlinkedIdentityField
 
-from post.models import Profile, Comment, Post, Geo, Address
+from .models import *
 
 
 class GeoSerializer(serializers.ModelSerializer):
@@ -15,36 +16,56 @@ class AddressSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CommentSerializer(serializers.HyperlinkedModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = '__all__'
 
 
 class PostSerializer(serializers.HyperlinkedModelSerializer):
-
-    profile = serializers.SlugRelatedField(read_only=True, slug_field="name")
+    # comments = HyperlinkedIdentityField(view_name='post-detail', lookup_url_kwarg='profile_pk')
     count_comments = serializers.SerializerMethodField()
 
     def get_count_comments(self, obj):
-        return obj.comment_set.count()
+        return obj.comments.all().count()
 
     class Meta:
         model = Post
-        fields = ("url", "title", "body", "profile", "count_comments")
+        fields = ("id", "title", "body", "count_comments")
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+    posts = PostSerializer(many=True, read_only=True)
 
     class Meta:
         model = Profile
-        fields = ("id", "url", "name", "email", "address")
+        fields = ("url", "id", "email", "posts")
 
 
-class ProfilePostsSerialiezer(serializers.ModelSerializer):
-
+class ProfilePostsSerialiezer(serializers.HyperlinkedModelSerializer):
     posts = PostSerializer(many=True, read_only=True)
 
     class Meta:
         model = Profile
         fields = ("name", "email", "address", "posts")
+
+
+class TotalSerializer(serializers.ModelSerializer):
+
+    total_posts = serializers.SerializerMethodField()
+    total_comments = serializers.SerializerMethodField()
+
+    def get_total_posts(self, obj):
+        contador = obj.posts.count()
+        return contador
+
+    def get_total_comments(self, obj):
+        contador = 0
+        for post in obj.posts.all():
+            contador += post.comments.all().count()
+        return contador
+
+
+    class Meta:
+        model = Profile
+        fields = ('pk', 'name', 'total_posts', 'total_comments')

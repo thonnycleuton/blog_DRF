@@ -13,7 +13,6 @@ class Address(models.Model):
     suite = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
     zipcode = models.CharField(max_length=50)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
     # geo = models.ForeignKey(Geo, on_delete=models.CASCADE)
 
     class Meta:
@@ -31,6 +30,7 @@ class Profile(models.Model):
 
     class Meta:
         ordering = ('id',)
+        verbose_name_plural = 'profiles'
 
     def __str__(self):
         return self.name
@@ -39,7 +39,7 @@ class Profile(models.Model):
 class Post(models.Model):
     title = models.CharField(max_length=100)
     body = models.TextField()
-    userId = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    userId = models.ForeignKey(Profile, related_name='posts', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('id',)
@@ -52,7 +52,7 @@ class Comment(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
     body = models.TextField()
-    postId = models.ForeignKey(Post, on_delete=models.CASCADE)
+    postId = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('id',)

@@ -14,6 +14,16 @@ class Command(BaseCommand):
         dump_data = open('post/fixtures/db.json', 'r')
         dados = json.load(dump_data)
 
+        for posts in dados['posts']:
+            try:
+                Post.objects.get_or_create(
+                    id=posts['id'],
+                    title=posts['title'],
+                    body=posts['body'],
+                    userId=Profile.objects.get(id=posts['userId']))
+            except Exception as e:
+                print(e)
+
         for user in dados['users']:
 
             try:
@@ -31,16 +41,6 @@ class Command(BaseCommand):
 
             except Exception as e:
                 print(e, cont)
-
-        for posts in dados['posts']:
-            try:
-                Post.objects.get_or_create(
-                    id=posts['id'],
-                    title=posts['title'],
-                    body=posts['body'],
-                    userId=Profile.objects.get(id=posts['userId']))
-            except Exception as e:
-                print(e)
 
         for comment in dados['comments']:
 
