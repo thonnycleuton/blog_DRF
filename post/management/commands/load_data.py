@@ -35,7 +35,8 @@ class Command(BaseCommand):
 
                 Profile.objects.get_or_create(
                     id=user['id'],
-                    name=user['name'],
+                    first_name=user['name'],
+                    username=user['username'],
                     email=user['email'],
                     address=address[0])
 

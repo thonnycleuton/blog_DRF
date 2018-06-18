@@ -23,15 +23,10 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.HyperlinkedModelSerializer):
-    # comments = HyperlinkedIdentityField(view_name='post-detail', lookup_url_kwarg='profile_pk')
-    count_comments = serializers.SerializerMethodField()
-
-    def get_count_comments(self, obj):
-        return obj.comments.all().count()
 
     class Meta:
         model = Post
-        fields = ("id", "title", "body", "count_comments")
+        fields = ("id", "url", "title", "body", "userId")
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
@@ -39,7 +34,7 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ("url", "id", "email", "posts")
+        fields = ("id", "url", "username", "email", "posts")
 
 
 class ProfilePostsSerialiezer(serializers.HyperlinkedModelSerializer):
@@ -47,11 +42,10 @@ class ProfilePostsSerialiezer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ("name", "email", "address", "posts")
+        fields = ("first_name", "email", "address", "posts")
 
 
 class TotalSerializer(serializers.ModelSerializer):
-
     total_posts = serializers.SerializerMethodField()
     total_comments = serializers.SerializerMethodField()
 
@@ -65,7 +59,6 @@ class TotalSerializer(serializers.ModelSerializer):
             contador += post.comments.all().count()
         return contador
 
-
     class Meta:
         model = Profile
-        fields = ('pk', 'name', 'total_posts', 'total_comments')
+        fields = ('pk', 'first_name', 'total_posts', 'total_comments')

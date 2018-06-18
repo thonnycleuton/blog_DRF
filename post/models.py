@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -22,10 +23,8 @@ class Address(models.Model):
         return self.street
 
 
-class Profile(models.Model):
+class Profile(User):
 
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
 
     class Meta:
@@ -33,7 +32,7 @@ class Profile(models.Model):
         verbose_name_plural = 'profiles'
 
     def __str__(self):
-        return self.name
+        return self.first_name
 
 
 class Post(models.Model):
