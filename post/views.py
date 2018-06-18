@@ -1,5 +1,4 @@
-from tokenize import Token
-
+from rest_framework.authtoken.models import Token
 from rest_framework import permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
@@ -25,6 +24,7 @@ class ProfileViewSet(ModelViewSet):
 class CommentsViewSet(ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
 
 class PostsViewSet(ModelViewSet):
@@ -33,7 +33,7 @@ class PostsViewSet(ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
     def perform_create(self, serializer):
-        serializer.save(userId=self.request.user.profile)
+        serializer.save(owner=self.request.user.profile)
 
 
 class ProfilePostViewSet(ModelViewSet):
@@ -57,6 +57,7 @@ class APIRoot(APIView):
         data = {
             "profiles": "http://localhost:8000/profiles/",
             "posts": "http://localhost:8000/posts/",
+            "comments": "http://localhost:8000/comments/",
         }
 
         return Response(data)
@@ -74,5 +75,5 @@ class CustomAuthToken(ObtainAuthToken):
         return Response({
             'token': token.key,
             'user_id': user.pk,
-            'email': user.email,
+            'name': user.first_name,
         })

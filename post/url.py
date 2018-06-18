@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from django.urls import path
+from django.urls import path, include
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework_nested import routers
 
@@ -8,11 +8,13 @@ from .views import *
 router = routers.SimpleRouter()
 router.register(r'profiles', ProfilesViewSet, base_name='profile')
 router.register(r'posts', PostsViewSet, base_name='post')
+router.register(r'comments', CommentsViewSet, base_name='comment')
 
 urlpatterns = [
     url(r'^$', APIRoot.as_view(), name='root'),
     path('api-token-auth/', obtain_auth_token),
     path('api-token-auth2/', CustomAuthToken.as_view()),
+    path('api-auth/', include('rest_framework.urls')),
 ]
 
 urlpatterns += router.urls

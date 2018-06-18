@@ -20,7 +20,7 @@ class Command(BaseCommand):
                     id=posts['id'],
                     title=posts['title'],
                     body=posts['body'],
-                    userId=Profile.objects.get(id=posts['userId']))
+                    owner=Profile.objects.get(id=posts['userId']))
             except Exception as e:
                 print(e)
 

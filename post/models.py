@@ -38,7 +38,7 @@ class Profile(User):
 class Post(models.Model):
     title = models.CharField(max_length=100)
     body = models.TextField()
-    userId = models.ForeignKey(Profile, related_name='posts', on_delete=models.CASCADE)
+    owner = models.ForeignKey(Profile, related_name='posts', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('id',)
