@@ -1,6 +1,8 @@
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -13,7 +15,7 @@ class ProfilesViewSet(ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     http_method_names = ['get']
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (AllowAny,)
 
 
 class ProfileViewSet(ModelViewSet):
@@ -30,7 +32,7 @@ class CommentsViewSet(ModelViewSet):
 class PostsViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
+    authentication_classes = (TokenAuthentication,)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user.profile)
@@ -66,7 +68,6 @@ class APIRoot(APIView):
 class CustomAuthToken(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
-
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
